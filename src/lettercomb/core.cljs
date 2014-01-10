@@ -36,4 +36,4 @@
 
 (set! (.-strokeStyle ctx) "#fff")
 (set! (.-lineWidth ctx) 2)
-(draw-hexagon ctx [50 50] 25)
+(draw-hexagon ctx [32 32] 32)
