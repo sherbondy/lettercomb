@@ -27,7 +27,8 @@
 (defn line-to [ctx [x y]]
   (.lineTo ctx x y))
 
-(defn draw-hexagon [ctx center radius]
+(defn draw-hexagon [ctx center radius & [fill-color]]
+  (set! (.-fillStyle ctx) (or fill-color "#000"))
   (.beginPath ctx)
   (move-to ctx (hex-point center radius 0))
   (doseq [i (range 7)]
@@ -37,20 +38,22 @@
 (defn width [radius]
   (* 2.0 radius (Math/cos (/ Math/PI 6.0))))
 
-(defn fill-board [ctx rows cols radius top-left]
-  "top-left = the top-left center point."
+(defn center-at [[col row] [left top] radius]
+  (let [hex-w    (width radius)
+        y-offset (* 3 0.5 radius)
+        x-offset (if (odd? row)
+                   (/ hex-w 2.0)
+                   0)]
+    [(+ left (* col hex-w) x-offset)
+     (+ top  (* row y-offset))]))
+
+(defn fill-board [ctx [cols rows] radius left-top]
+  "left-top = the [left top] center point."
   (doseq [i (range cols)
           j (range rows)]
-    (let [hex-w    (width radius)
-          y-offset (* 3 0.5 radius)
-          x-offset (if (odd? j)
-                     (/ hex-w 2.0)
-                     0)
-          center   [(+ (top-left 0) (* i hex-w) x-offset)
-                    (+ (top-left 1) (* j y-offset))]]
+    (let [center (center-at [i j] left-top radius)]
       (draw-hexagon ctx center radius))))
 
 (set! (.-strokeStyle ctx) "#fff")
 (set! (.-lineWidth ctx) 2)
-
-(fill-board ctx 19 10 32 [60 48])
+(fill-board ctx [10 19] 32 [60 48])
