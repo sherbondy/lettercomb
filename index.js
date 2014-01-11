@@ -22859,33 +22859,33 @@ lettercomb.core.blacken = function blacken(ctx) {
   return ctx.fillRect(0, 0, 640, 960);
 };
 lettercomb.core.blacken.call(null, lettercomb.core.ctx);
-lettercomb.core.hex_point = function hex_point(p__12430, radius, i) {
-  var vec__12432 = p__12430;
-  var cx = cljs.core.nth.call(null, vec__12432, 0, null);
-  var cy = cljs.core.nth.call(null, vec__12432, 1, null);
+lettercomb.core.hex_point = function hex_point(p__14986, radius, i) {
+  var vec__14988 = p__14986;
+  var cx = cljs.core.nth.call(null, vec__14988, 0, null);
+  var cy = cljs.core.nth.call(null, vec__14988, 1, null);
   var angle = Math.PI / 3 * (i + 0.5);
   return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cx + radius * Math.cos.call(null, angle), cy + radius * Math.sin.call(null, angle)], null);
 };
 lettercomb.core.hexagon = function hexagon(center, radius) {
-  var iter__4119__auto__ = function iter__12437(s__12438) {
+  var iter__4119__auto__ = function iter__14993(s__14994) {
     return new cljs.core.LazySeq(null, function() {
-      var s__12438__$1 = s__12438;
+      var s__14994__$1 = s__14994;
       while (true) {
-        var temp__4092__auto__ = cljs.core.seq.call(null, s__12438__$1);
+        var temp__4092__auto__ = cljs.core.seq.call(null, s__14994__$1);
         if (temp__4092__auto__) {
-          var s__12438__$2 = temp__4092__auto__;
-          if (cljs.core.chunked_seq_QMARK_.call(null, s__12438__$2)) {
-            var c__4117__auto__ = cljs.core.chunk_first.call(null, s__12438__$2);
+          var s__14994__$2 = temp__4092__auto__;
+          if (cljs.core.chunked_seq_QMARK_.call(null, s__14994__$2)) {
+            var c__4117__auto__ = cljs.core.chunk_first.call(null, s__14994__$2);
             var size__4118__auto__ = cljs.core.count.call(null, c__4117__auto__);
-            var b__12440 = cljs.core.chunk_buffer.call(null, size__4118__auto__);
+            var b__14996 = cljs.core.chunk_buffer.call(null, size__4118__auto__);
             if (function() {
-              var i__12439 = 0;
+              var i__14995 = 0;
               while (true) {
-                if (i__12439 < size__4118__auto__) {
-                  var i = cljs.core._nth.call(null, c__4117__auto__, i__12439);
-                  cljs.core.chunk_append.call(null, b__12440, lettercomb.core.hex_point.call(null, center, radius, i));
-                  var G__12441 = i__12439 + 1;
-                  i__12439 = G__12441;
+                if (i__14995 < size__4118__auto__) {
+                  var i = cljs.core._nth.call(null, c__4117__auto__, i__14995);
+                  cljs.core.chunk_append.call(null, b__14996, lettercomb.core.hex_point.call(null, center, radius, i));
+                  var G__14997 = i__14995 + 1;
+                  i__14995 = G__14997;
                   continue;
                 } else {
                   return true;
@@ -22893,13 +22893,13 @@ lettercomb.core.hexagon = function hexagon(center, radius) {
                 break;
               }
             }()) {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__12440), iter__12437.call(null, cljs.core.chunk_rest.call(null, s__12438__$2)));
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__14996), iter__14993.call(null, cljs.core.chunk_rest.call(null, s__14994__$2)));
             } else {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__12440), null);
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__14996), null);
             }
           } else {
-            var i = cljs.core.first.call(null, s__12438__$2);
-            return cljs.core.cons.call(null, lettercomb.core.hex_point.call(null, center, radius, i), iter__12437.call(null, cljs.core.rest.call(null, s__12438__$2)));
+            var i = cljs.core.first.call(null, s__14994__$2);
+            return cljs.core.cons.call(null, lettercomb.core.hex_point.call(null, center, radius, i), iter__14993.call(null, cljs.core.rest.call(null, s__14994__$2)));
           }
         } else {
           return null;
@@ -22910,22 +22910,22 @@ lettercomb.core.hexagon = function hexagon(center, radius) {
   };
   return iter__4119__auto__.call(null, cljs.core.range.call(null, 7));
 };
-lettercomb.core.move_to = function move_to(ctx, p__12442) {
-  var vec__12444 = p__12442;
-  var x = cljs.core.nth.call(null, vec__12444, 0, null);
-  var y = cljs.core.nth.call(null, vec__12444, 1, null);
+lettercomb.core.move_to = function move_to(ctx, p__14998) {
+  var vec__15000 = p__14998;
+  var x = cljs.core.nth.call(null, vec__15000, 0, null);
+  var y = cljs.core.nth.call(null, vec__15000, 1, null);
   return ctx.moveTo(x, y);
 };
-lettercomb.core.line_to = function line_to(ctx, p__12445) {
-  var vec__12447 = p__12445;
-  var x = cljs.core.nth.call(null, vec__12447, 0, null);
-  var y = cljs.core.nth.call(null, vec__12447, 1, null);
+lettercomb.core.line_to = function line_to(ctx, p__15001) {
+  var vec__15003 = p__15001;
+  var x = cljs.core.nth.call(null, vec__15003, 0, null);
+  var y = cljs.core.nth.call(null, vec__15003, 1, null);
   return ctx.lineTo(x, y);
 };
 lettercomb.core.draw_hexagon = function() {
-  var draw_hexagon__delegate = function(ctx, center, radius, p__12448) {
-    var vec__12454 = p__12448;
-    var fill_color = cljs.core.nth.call(null, vec__12454, 0, null);
+  var draw_hexagon__delegate = function(ctx, center, radius, p__15004) {
+    var vec__15010 = p__15004;
+    var fill_color = cljs.core.nth.call(null, vec__15010, 0, null);
     ctx.beginPath();
     ctx.fillStyle = function() {
       var or__3408__auto__ = fill_color;
@@ -22936,49 +22936,49 @@ lettercomb.core.draw_hexagon = function() {
       }
     }();
     lettercomb.core.move_to.call(null, ctx, lettercomb.core.hex_point.call(null, center, radius, 0));
-    var seq__12455_12459 = cljs.core.seq.call(null, cljs.core.range.call(null, 7));
-    var chunk__12456_12460 = null;
-    var count__12457_12461 = 0;
-    var i__12458_12462 = 0;
+    var seq__15011_15015 = cljs.core.seq.call(null, cljs.core.range.call(null, 7));
+    var chunk__15012_15016 = null;
+    var count__15013_15017 = 0;
+    var i__15014_15018 = 0;
     while (true) {
-      if (i__12458_12462 < count__12457_12461) {
-        var i_12463 = cljs.core._nth.call(null, chunk__12456_12460, i__12458_12462);
-        lettercomb.core.line_to.call(null, ctx, lettercomb.core.hex_point.call(null, center, radius, i_12463));
-        var G__12464 = seq__12455_12459;
-        var G__12465 = chunk__12456_12460;
-        var G__12466 = count__12457_12461;
-        var G__12467 = i__12458_12462 + 1;
-        seq__12455_12459 = G__12464;
-        chunk__12456_12460 = G__12465;
-        count__12457_12461 = G__12466;
-        i__12458_12462 = G__12467;
+      if (i__15014_15018 < count__15013_15017) {
+        var i_15019 = cljs.core._nth.call(null, chunk__15012_15016, i__15014_15018);
+        lettercomb.core.line_to.call(null, ctx, lettercomb.core.hex_point.call(null, center, radius, i_15019));
+        var G__15020 = seq__15011_15015;
+        var G__15021 = chunk__15012_15016;
+        var G__15022 = count__15013_15017;
+        var G__15023 = i__15014_15018 + 1;
+        seq__15011_15015 = G__15020;
+        chunk__15012_15016 = G__15021;
+        count__15013_15017 = G__15022;
+        i__15014_15018 = G__15023;
         continue;
       } else {
-        var temp__4092__auto___12468 = cljs.core.seq.call(null, seq__12455_12459);
-        if (temp__4092__auto___12468) {
-          var seq__12455_12469__$1 = temp__4092__auto___12468;
-          if (cljs.core.chunked_seq_QMARK_.call(null, seq__12455_12469__$1)) {
-            var c__4150__auto___12470 = cljs.core.chunk_first.call(null, seq__12455_12469__$1);
-            var G__12471 = cljs.core.chunk_rest.call(null, seq__12455_12469__$1);
-            var G__12472 = c__4150__auto___12470;
-            var G__12473 = cljs.core.count.call(null, c__4150__auto___12470);
-            var G__12474 = 0;
-            seq__12455_12459 = G__12471;
-            chunk__12456_12460 = G__12472;
-            count__12457_12461 = G__12473;
-            i__12458_12462 = G__12474;
+        var temp__4092__auto___15024 = cljs.core.seq.call(null, seq__15011_15015);
+        if (temp__4092__auto___15024) {
+          var seq__15011_15025__$1 = temp__4092__auto___15024;
+          if (cljs.core.chunked_seq_QMARK_.call(null, seq__15011_15025__$1)) {
+            var c__4150__auto___15026 = cljs.core.chunk_first.call(null, seq__15011_15025__$1);
+            var G__15027 = cljs.core.chunk_rest.call(null, seq__15011_15025__$1);
+            var G__15028 = c__4150__auto___15026;
+            var G__15029 = cljs.core.count.call(null, c__4150__auto___15026);
+            var G__15030 = 0;
+            seq__15011_15015 = G__15027;
+            chunk__15012_15016 = G__15028;
+            count__15013_15017 = G__15029;
+            i__15014_15018 = G__15030;
             continue;
           } else {
-            var i_12475 = cljs.core.first.call(null, seq__12455_12469__$1);
-            lettercomb.core.line_to.call(null, ctx, lettercomb.core.hex_point.call(null, center, radius, i_12475));
-            var G__12476 = cljs.core.next.call(null, seq__12455_12469__$1);
-            var G__12477 = null;
-            var G__12478 = 0;
-            var G__12479 = 0;
-            seq__12455_12459 = G__12476;
-            chunk__12456_12460 = G__12477;
-            count__12457_12461 = G__12478;
-            i__12458_12462 = G__12479;
+            var i_15031 = cljs.core.first.call(null, seq__15011_15025__$1);
+            lettercomb.core.line_to.call(null, ctx, lettercomb.core.hex_point.call(null, center, radius, i_15031));
+            var G__15032 = cljs.core.next.call(null, seq__15011_15025__$1);
+            var G__15033 = null;
+            var G__15034 = 0;
+            var G__15035 = 0;
+            seq__15011_15015 = G__15032;
+            chunk__15012_15016 = G__15033;
+            count__15013_15017 = G__15034;
+            i__15014_15018 = G__15035;
             continue;
           }
         } else {
@@ -22990,21 +22990,21 @@ lettercomb.core.draw_hexagon = function() {
     return ctx.stroke();
   };
   var draw_hexagon = function(ctx, center, radius, var_args) {
-    var p__12448 = null;
+    var p__15004 = null;
     if (arguments.length > 3) {
-      p__12448 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 3), 0);
+      p__15004 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 3), 0);
     }
-    return draw_hexagon__delegate.call(this, ctx, center, radius, p__12448);
+    return draw_hexagon__delegate.call(this, ctx, center, radius, p__15004);
   };
   draw_hexagon.cljs$lang$maxFixedArity = 3;
-  draw_hexagon.cljs$lang$applyTo = function(arglist__12480) {
-    var ctx = cljs.core.first(arglist__12480);
-    arglist__12480 = cljs.core.next(arglist__12480);
-    var center = cljs.core.first(arglist__12480);
-    arglist__12480 = cljs.core.next(arglist__12480);
-    var radius = cljs.core.first(arglist__12480);
-    var p__12448 = cljs.core.rest(arglist__12480);
-    return draw_hexagon__delegate(ctx, center, radius, p__12448);
+  draw_hexagon.cljs$lang$applyTo = function(arglist__15036) {
+    var ctx = cljs.core.first(arglist__15036);
+    arglist__15036 = cljs.core.next(arglist__15036);
+    var center = cljs.core.first(arglist__15036);
+    arglist__15036 = cljs.core.next(arglist__15036);
+    var radius = cljs.core.first(arglist__15036);
+    var p__15004 = cljs.core.rest(arglist__15036);
+    return draw_hexagon__delegate(ctx, center, radius, p__15004);
   };
   draw_hexagon.cljs$core$IFn$_invoke$arity$variadic = draw_hexagon__delegate;
   return draw_hexagon;
@@ -23012,13 +23012,13 @@ lettercomb.core.draw_hexagon = function() {
 lettercomb.core.width = function width(radius) {
   return 2 * radius * Math.cos.call(null, Math.PI / 6);
 };
-lettercomb.core.center_at = function center_at(p__12481, p__12482, radius) {
-  var vec__12485 = p__12481;
-  var col = cljs.core.nth.call(null, vec__12485, 0, null);
-  var row = cljs.core.nth.call(null, vec__12485, 1, null);
-  var vec__12486 = p__12482;
-  var left = cljs.core.nth.call(null, vec__12486, 0, null);
-  var top = cljs.core.nth.call(null, vec__12486, 1, null);
+lettercomb.core.center_at = function center_at(p__15037, p__15038, radius) {
+  var vec__15041 = p__15037;
+  var col = cljs.core.nth.call(null, vec__15041, 0, null);
+  var row = cljs.core.nth.call(null, vec__15041, 1, null);
+  var vec__15042 = p__15038;
+  var left = cljs.core.nth.call(null, vec__15042, 0, null);
+  var top = cljs.core.nth.call(null, vec__15042, 1, null);
   var hex_w = lettercomb.core.width.call(null, radius);
   var y_offset = 3 * 0.5 * radius;
   var x_offset = cljs.core.odd_QMARK_.call(null, row) ? hex_w / 2 : 0;
@@ -23030,63 +23030,62 @@ lettercomb.core.rand_hex_str = function rand_hex_str() {
 lettercomb.core.rand_color_str = function rand_color_str() {
   return[cljs.core.str("#"), cljs.core.str(lettercomb.core.rand_hex_str.call(null)), cljs.core.str(lettercomb.core.rand_hex_str.call(null)), cljs.core.str(lettercomb.core.rand_hex_str.call(null))].join("");
 };
-lettercomb.core.fill_board = function fill_board(ctx, p__12487, radius, left_top) {
-  var vec__12501 = p__12487;
-  var cols = cljs.core.nth.call(null, vec__12501, 0, null);
-  var rows = cljs.core.nth.call(null, vec__12501, 1, null);
-  ctx.beginPath();
-  var seq__12502 = cljs.core.seq.call(null, cljs.core.range.call(null, cols));
-  var chunk__12507 = null;
-  var count__12508 = 0;
-  var i__12509 = 0;
+lettercomb.core.fill_board = function fill_board(ctx, p__15043, radius, left_top) {
+  var vec__15057 = p__15043;
+  var cols = cljs.core.nth.call(null, vec__15057, 0, null);
+  var rows = cljs.core.nth.call(null, vec__15057, 1, null);
+  var seq__15058 = cljs.core.seq.call(null, cljs.core.range.call(null, cols));
+  var chunk__15063 = null;
+  var count__15064 = 0;
+  var i__15065 = 0;
   while (true) {
-    if (i__12509 < count__12508) {
-      var i = cljs.core._nth.call(null, chunk__12507, i__12509);
-      var seq__12510_12514 = cljs.core.seq.call(null, cljs.core.range.call(null, rows));
-      var chunk__12511_12515 = null;
-      var count__12512_12516 = 0;
-      var i__12513_12517 = 0;
+    if (i__15065 < count__15064) {
+      var i = cljs.core._nth.call(null, chunk__15063, i__15065);
+      var seq__15066_15070 = cljs.core.seq.call(null, cljs.core.range.call(null, rows));
+      var chunk__15067_15071 = null;
+      var count__15068_15072 = 0;
+      var i__15069_15073 = 0;
       while (true) {
-        if (i__12513_12517 < count__12512_12516) {
-          var j_12518 = cljs.core._nth.call(null, chunk__12511_12515, i__12513_12517);
-          var center_12519 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_12518], null), left_top, radius);
-          lettercomb.core.draw_hexagon.call(null, ctx, center_12519, radius, lettercomb.core.rand_color_str.call(null));
-          var G__12520 = seq__12510_12514;
-          var G__12521 = chunk__12511_12515;
-          var G__12522 = count__12512_12516;
-          var G__12523 = i__12513_12517 + 1;
-          seq__12510_12514 = G__12520;
-          chunk__12511_12515 = G__12521;
-          count__12512_12516 = G__12522;
-          i__12513_12517 = G__12523;
+        if (i__15069_15073 < count__15068_15072) {
+          var j_15074 = cljs.core._nth.call(null, chunk__15067_15071, i__15069_15073);
+          var center_15075 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_15074], null), left_top, radius);
+          lettercomb.core.draw_hexagon.call(null, ctx, center_15075, radius, lettercomb.core.rand_color_str.call(null));
+          var G__15076 = seq__15066_15070;
+          var G__15077 = chunk__15067_15071;
+          var G__15078 = count__15068_15072;
+          var G__15079 = i__15069_15073 + 1;
+          seq__15066_15070 = G__15076;
+          chunk__15067_15071 = G__15077;
+          count__15068_15072 = G__15078;
+          i__15069_15073 = G__15079;
           continue;
         } else {
-          var temp__4092__auto___12524 = cljs.core.seq.call(null, seq__12510_12514);
-          if (temp__4092__auto___12524) {
-            var seq__12510_12525__$1 = temp__4092__auto___12524;
-            if (cljs.core.chunked_seq_QMARK_.call(null, seq__12510_12525__$1)) {
-              var c__4150__auto___12526 = cljs.core.chunk_first.call(null, seq__12510_12525__$1);
-              var G__12527 = cljs.core.chunk_rest.call(null, seq__12510_12525__$1);
-              var G__12528 = c__4150__auto___12526;
-              var G__12529 = cljs.core.count.call(null, c__4150__auto___12526);
-              var G__12530 = 0;
-              seq__12510_12514 = G__12527;
-              chunk__12511_12515 = G__12528;
-              count__12512_12516 = G__12529;
-              i__12513_12517 = G__12530;
+          var temp__4092__auto___15080 = cljs.core.seq.call(null, seq__15066_15070);
+          if (temp__4092__auto___15080) {
+            var seq__15066_15081__$1 = temp__4092__auto___15080;
+            if (cljs.core.chunked_seq_QMARK_.call(null, seq__15066_15081__$1)) {
+              var c__4150__auto___15082 = cljs.core.chunk_first.call(null, seq__15066_15081__$1);
+              var G__15083 = cljs.core.chunk_rest.call(null, seq__15066_15081__$1);
+              var G__15084 = c__4150__auto___15082;
+              var G__15085 = cljs.core.count.call(null, c__4150__auto___15082);
+              var G__15086 = 0;
+              seq__15066_15070 = G__15083;
+              chunk__15067_15071 = G__15084;
+              count__15068_15072 = G__15085;
+              i__15069_15073 = G__15086;
               continue;
             } else {
-              var j_12531 = cljs.core.first.call(null, seq__12510_12525__$1);
-              var center_12532 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_12531], null), left_top, radius);
-              lettercomb.core.draw_hexagon.call(null, ctx, center_12532, radius, lettercomb.core.rand_color_str.call(null));
-              var G__12533 = cljs.core.next.call(null, seq__12510_12525__$1);
-              var G__12534 = null;
-              var G__12535 = 0;
-              var G__12536 = 0;
-              seq__12510_12514 = G__12533;
-              chunk__12511_12515 = G__12534;
-              count__12512_12516 = G__12535;
-              i__12513_12517 = G__12536;
+              var j_15087 = cljs.core.first.call(null, seq__15066_15081__$1);
+              var center_15088 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_15087], null), left_top, radius);
+              lettercomb.core.draw_hexagon.call(null, ctx, center_15088, radius, lettercomb.core.rand_color_str.call(null));
+              var G__15089 = cljs.core.next.call(null, seq__15066_15081__$1);
+              var G__15090 = null;
+              var G__15091 = 0;
+              var G__15092 = 0;
+              seq__15066_15070 = G__15089;
+              chunk__15067_15071 = G__15090;
+              count__15068_15072 = G__15091;
+              i__15069_15073 = G__15092;
               continue;
             }
           } else {
@@ -23094,77 +23093,77 @@ lettercomb.core.fill_board = function fill_board(ctx, p__12487, radius, left_top
         }
         break;
       }
-      var G__12537 = seq__12502;
-      var G__12538 = chunk__12507;
-      var G__12539 = count__12508;
-      var G__12540 = i__12509 + 1;
-      seq__12502 = G__12537;
-      chunk__12507 = G__12538;
-      count__12508 = G__12539;
-      i__12509 = G__12540;
+      var G__15093 = seq__15058;
+      var G__15094 = chunk__15063;
+      var G__15095 = count__15064;
+      var G__15096 = i__15065 + 1;
+      seq__15058 = G__15093;
+      chunk__15063 = G__15094;
+      count__15064 = G__15095;
+      i__15065 = G__15096;
       continue;
     } else {
-      var temp__4092__auto__ = cljs.core.seq.call(null, seq__12502);
+      var temp__4092__auto__ = cljs.core.seq.call(null, seq__15058);
       if (temp__4092__auto__) {
-        var seq__12502__$1 = temp__4092__auto__;
-        if (cljs.core.chunked_seq_QMARK_.call(null, seq__12502__$1)) {
-          var c__4150__auto__ = cljs.core.chunk_first.call(null, seq__12502__$1);
-          var G__12541 = cljs.core.chunk_rest.call(null, seq__12502__$1);
-          var G__12542 = c__4150__auto__;
-          var G__12543 = cljs.core.count.call(null, c__4150__auto__);
-          var G__12544 = 0;
-          seq__12502 = G__12541;
-          chunk__12507 = G__12542;
-          count__12508 = G__12543;
-          i__12509 = G__12544;
+        var seq__15058__$1 = temp__4092__auto__;
+        if (cljs.core.chunked_seq_QMARK_.call(null, seq__15058__$1)) {
+          var c__4150__auto__ = cljs.core.chunk_first.call(null, seq__15058__$1);
+          var G__15097 = cljs.core.chunk_rest.call(null, seq__15058__$1);
+          var G__15098 = c__4150__auto__;
+          var G__15099 = cljs.core.count.call(null, c__4150__auto__);
+          var G__15100 = 0;
+          seq__15058 = G__15097;
+          chunk__15063 = G__15098;
+          count__15064 = G__15099;
+          i__15065 = G__15100;
           continue;
         } else {
-          var i = cljs.core.first.call(null, seq__12502__$1);
-          var seq__12503_12545 = cljs.core.seq.call(null, cljs.core.range.call(null, rows));
-          var chunk__12504_12546 = null;
-          var count__12505_12547 = 0;
-          var i__12506_12548 = 0;
+          var i = cljs.core.first.call(null, seq__15058__$1);
+          var seq__15059_15101 = cljs.core.seq.call(null, cljs.core.range.call(null, rows));
+          var chunk__15060_15102 = null;
+          var count__15061_15103 = 0;
+          var i__15062_15104 = 0;
           while (true) {
-            if (i__12506_12548 < count__12505_12547) {
-              var j_12549 = cljs.core._nth.call(null, chunk__12504_12546, i__12506_12548);
-              var center_12550 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_12549], null), left_top, radius);
-              lettercomb.core.draw_hexagon.call(null, ctx, center_12550, radius, lettercomb.core.rand_color_str.call(null));
-              var G__12551 = seq__12503_12545;
-              var G__12552 = chunk__12504_12546;
-              var G__12553 = count__12505_12547;
-              var G__12554 = i__12506_12548 + 1;
-              seq__12503_12545 = G__12551;
-              chunk__12504_12546 = G__12552;
-              count__12505_12547 = G__12553;
-              i__12506_12548 = G__12554;
+            if (i__15062_15104 < count__15061_15103) {
+              var j_15105 = cljs.core._nth.call(null, chunk__15060_15102, i__15062_15104);
+              var center_15106 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_15105], null), left_top, radius);
+              lettercomb.core.draw_hexagon.call(null, ctx, center_15106, radius, lettercomb.core.rand_color_str.call(null));
+              var G__15107 = seq__15059_15101;
+              var G__15108 = chunk__15060_15102;
+              var G__15109 = count__15061_15103;
+              var G__15110 = i__15062_15104 + 1;
+              seq__15059_15101 = G__15107;
+              chunk__15060_15102 = G__15108;
+              count__15061_15103 = G__15109;
+              i__15062_15104 = G__15110;
               continue;
             } else {
-              var temp__4092__auto___12555__$1 = cljs.core.seq.call(null, seq__12503_12545);
-              if (temp__4092__auto___12555__$1) {
-                var seq__12503_12556__$1 = temp__4092__auto___12555__$1;
-                if (cljs.core.chunked_seq_QMARK_.call(null, seq__12503_12556__$1)) {
-                  var c__4150__auto___12557 = cljs.core.chunk_first.call(null, seq__12503_12556__$1);
-                  var G__12558 = cljs.core.chunk_rest.call(null, seq__12503_12556__$1);
-                  var G__12559 = c__4150__auto___12557;
-                  var G__12560 = cljs.core.count.call(null, c__4150__auto___12557);
-                  var G__12561 = 0;
-                  seq__12503_12545 = G__12558;
-                  chunk__12504_12546 = G__12559;
-                  count__12505_12547 = G__12560;
-                  i__12506_12548 = G__12561;
+              var temp__4092__auto___15111__$1 = cljs.core.seq.call(null, seq__15059_15101);
+              if (temp__4092__auto___15111__$1) {
+                var seq__15059_15112__$1 = temp__4092__auto___15111__$1;
+                if (cljs.core.chunked_seq_QMARK_.call(null, seq__15059_15112__$1)) {
+                  var c__4150__auto___15113 = cljs.core.chunk_first.call(null, seq__15059_15112__$1);
+                  var G__15114 = cljs.core.chunk_rest.call(null, seq__15059_15112__$1);
+                  var G__15115 = c__4150__auto___15113;
+                  var G__15116 = cljs.core.count.call(null, c__4150__auto___15113);
+                  var G__15117 = 0;
+                  seq__15059_15101 = G__15114;
+                  chunk__15060_15102 = G__15115;
+                  count__15061_15103 = G__15116;
+                  i__15062_15104 = G__15117;
                   continue;
                 } else {
-                  var j_12562 = cljs.core.first.call(null, seq__12503_12556__$1);
-                  var center_12563 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_12562], null), left_top, radius);
-                  lettercomb.core.draw_hexagon.call(null, ctx, center_12563, radius, lettercomb.core.rand_color_str.call(null));
-                  var G__12564 = cljs.core.next.call(null, seq__12503_12556__$1);
-                  var G__12565 = null;
-                  var G__12566 = 0;
-                  var G__12567 = 0;
-                  seq__12503_12545 = G__12564;
-                  chunk__12504_12546 = G__12565;
-                  count__12505_12547 = G__12566;
-                  i__12506_12548 = G__12567;
+                  var j_15118 = cljs.core.first.call(null, seq__15059_15112__$1);
+                  var center_15119 = lettercomb.core.center_at.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [i, j_15118], null), left_top, radius);
+                  lettercomb.core.draw_hexagon.call(null, ctx, center_15119, radius, lettercomb.core.rand_color_str.call(null));
+                  var G__15120 = cljs.core.next.call(null, seq__15059_15112__$1);
+                  var G__15121 = null;
+                  var G__15122 = 0;
+                  var G__15123 = 0;
+                  seq__15059_15101 = G__15120;
+                  chunk__15060_15102 = G__15121;
+                  count__15061_15103 = G__15122;
+                  i__15062_15104 = G__15123;
                   continue;
                 }
               } else {
@@ -23172,14 +23171,14 @@ lettercomb.core.fill_board = function fill_board(ctx, p__12487, radius, left_top
             }
             break;
           }
-          var G__12568 = cljs.core.next.call(null, seq__12502__$1);
-          var G__12569 = null;
-          var G__12570 = 0;
-          var G__12571 = 0;
-          seq__12502 = G__12568;
-          chunk__12507 = G__12569;
-          count__12508 = G__12570;
-          i__12509 = G__12571;
+          var G__15124 = cljs.core.next.call(null, seq__15058__$1);
+          var G__15125 = null;
+          var G__15126 = 0;
+          var G__15127 = 0;
+          seq__15058 = G__15124;
+          chunk__15063 = G__15125;
+          count__15064 = G__15126;
+          i__15065 = G__15127;
           continue;
         }
       } else {
@@ -23191,6 +23190,24 @@ lettercomb.core.fill_board = function fill_board(ctx, p__12487, radius, left_top
 };
 lettercomb.core.ctx.strokeStyle = "#fff";
 lettercomb.core.ctx.lineWidth = 2;
-lettercomb.core.fill_board.call(null, lettercomb.core.ctx, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [10, 19], null), 32, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [60, 48], null));
+lettercomb.core.playing_QMARK_ = cljs.core.atom.call(null, true);
+lettercomb.core.play_BANG_ = function play_BANG_() {
+  return cljs.core.reset_BANG_.call(null, lettercomb.core.playing_QMARK_, true);
+};
+lettercomb.core.pause_BANG_ = function pause_BANG_() {
+  return cljs.core.reset_BANG_.call(null, lettercomb.core.playing_QMARK_, false);
+};
+lettercomb.core.game_loop = function game_loop() {
+  requestAnimationFrame(game_loop);
+  if (cljs.core.truth_(cljs.core.deref.call(null, lettercomb.core.playing_QMARK_))) {
+    lettercomb.core.blacken.call(null, lettercomb.core.ctx);
+    return lettercomb.core.fill_board.call(null, lettercomb.core.ctx, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [10, 19], null), 32, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [60, 48], null));
+  } else {
+    return null;
+  }
+};
+lettercomb.core.game_loop.call(null);
+lettercomb.core.pause_BANG_.call(null);
+lettercomb.core.play_BANG_.call(null);
 
 //# sourceMappingURL=index.map.js

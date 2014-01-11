@@ -62,7 +62,6 @@
 
 (defn fill-board [ctx [cols rows] radius left-top]
   "left-top = the [left top] center point."
-  (.beginPath ctx)
   (doseq [i (range cols)
           j (range rows)]
     (let [center (center-at [i j] left-top radius)]
@@ -70,4 +69,22 @@
 
 (set! (.-strokeStyle ctx) "#fff")
 (set! (.-lineWidth ctx) 2)
-(fill-board ctx [10 19] 32 [60 48])
+
+(def playing? (atom true))
+
+(defn play! []
+  (reset! playing? true))
+
+(defn pause! []
+  (reset! playing? false))
+
+(defn game-loop []
+  (js/requestAnimationFrame game-loop)
+  (when @playing?
+    (blacken ctx)
+    (fill-board ctx [10 19] 32 [60 48])))
+
+(game-loop)
+
+(pause!)
+(play!)
