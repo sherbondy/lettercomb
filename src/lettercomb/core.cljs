@@ -53,4 +53,4 @@
 (set! (.-strokeStyle ctx) "#fff")
 (set! (.-lineWidth ctx) 2)
 
-(fill-board ctx 19 10 32 [32 32])
+(fill-board ctx 19 10 32 [60 48])
