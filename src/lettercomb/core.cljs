@@ -9,6 +9,25 @@
 
 ;; (blacken! ctx)
 
+(defn rand-hex-str []
+  (.toString (Math/round (* (Math/random) 15))
+             16))
+
+(defn rand-color-str []
+  (str "#"
+       (rand-hex-str)
+       (rand-hex-str)
+       (rand-hex-str)))
+
+;; this should really be at the frequency of
+;; letter appearances in english words
+(defn rand-letter []
+  "ascii lower case starts at 97"
+  (String/fromCharCode
+   (+ 97
+      (Math/floor
+       (* (Math/random) 26)))))
+
 (defn hex-point [[cx cy] radius i]
   "Point i of a hexagon with radius and center [cx, cy]"
   (let [angle (* (/ Math/PI 3.0) (+ i 0.5))]
@@ -38,9 +57,15 @@
   (.fill ctx)
   (.stroke ctx))
 
-(defn draw-letter-hex! [ctx center radius letter]
+(def font-size 24)
+(def q-font-size (/ font-size 4))
 
-  (draw-hexagon! ctx center radius))
+(defn draw-letter-hex! [ctx center radius letter]
+  (draw-hexagon! ctx center radius)
+  (set! (.-fillStyle ctx) "#fff")
+  (.fillText ctx letter
+             (- (center 0) q-font-size)
+             (+ (center 1) q-font-size)))
 
 (defn width [radius]
   (* 2.0 radius (Math/cos (/ Math/PI 6.0))))
@@ -54,22 +79,13 @@
     [(+ left (* col hex-w) x-offset)
      (+ top  (* row y-offset))]))
 
-(defn rand-hex-str []
-  (.toString (Math/round (* (Math/random) 15))
-             16))
-
-(defn rand-color-str []
-  (str "#"
-       (rand-hex-str)
-       (rand-hex-str)
-       (rand-hex-str)))
-
 (defn fill-board! [ctx [cols rows] radius left-top]
   "left-top = the [left top] center point."
   (doseq [i (range cols)
           j (range rows)]
     (let [center (center-at [i j] left-top radius)]
-      (draw-hexagon! ctx center radius (rand-color-str)))))
+      (draw-letter-hex! ctx center radius
+                        (rand-letter)))))
 
 (def playing? (atom true))
 
@@ -81,6 +97,8 @@
 
 (set! (.-strokeStyle ctx) "#fff")
 (set! (.-lineWidth ctx) 2)
+(set! (.-font ctx)
+      (str "bold " font-size "px Courier"))
 
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
