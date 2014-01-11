@@ -27,12 +27,15 @@
 (defn line-to [ctx [x y]]
   (.lineTo ctx x y))
 
+;; eventually make drawing in terms of protocols
+;; on structures
 (defn draw-hexagon [ctx center radius & [fill-color]]
-  (set! (.-fillStyle ctx) (or fill-color "#000"))
   (.beginPath ctx)
+  (set! (.-fillStyle ctx) (or fill-color "#000"))
   (move-to ctx (hex-point center radius 0))
   (doseq [i (range 7)]
     (line-to ctx (hex-point center radius i)))
+  (.fill ctx)
   (.stroke ctx))
 
 (defn width [radius]
@@ -47,12 +50,23 @@
     [(+ left (* col hex-w) x-offset)
      (+ top  (* row y-offset))]))
 
+(defn rand-hex-str []
+  (.toString (Math/round (* (Math/random) 15))
+             16))
+
+(defn rand-color-str []
+  (str "#"
+       (rand-hex-str)
+       (rand-hex-str)
+       (rand-hex-str)))
+
 (defn fill-board [ctx [cols rows] radius left-top]
   "left-top = the [left top] center point."
+  (.beginPath ctx)
   (doseq [i (range cols)
           j (range rows)]
     (let [center (center-at [i j] left-top radius)]
-      (draw-hexagon ctx center radius))))
+      (draw-hexagon ctx center radius (rand-color-str)))))
 
 (set! (.-strokeStyle ctx) "#fff")
 (set! (.-lineWidth ctx) 2)
