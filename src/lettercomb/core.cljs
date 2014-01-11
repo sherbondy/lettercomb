@@ -60,8 +60,13 @@
 (def font-size 24)
 (def q-font-size (/ font-size 4))
 
+;; eventually map colors based on frequency/point-value
+(defn letter-color [letter]
+  (rand-color-str))
+
 (defn draw-letter-hex! [ctx center radius letter]
-  (draw-hexagon! ctx center radius)
+  (draw-hexagon! ctx center radius
+                 (letter-color letter))
   (set! (.-fillStyle ctx) "#fff")
   (.fillText ctx letter
              (- (center 0) q-font-size)
