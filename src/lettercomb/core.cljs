@@ -146,7 +146,18 @@
 
 (game-loop)
 
+(defn write-word! [board [start-col start-row] word]
+  (let [up-word (.toUpperCase word)]
+    (doseq [i (range (count up-word))]
+      (swap! board assoc-in
+             [start-row (+ i start-col)]
+             (nth up-word i)))))
+
+(write-word! board [0 1] "letter")
+(write-word! board [1 2] "comb")
+
 ;; (swap! board assoc-in [0 0] :a)
+;; (swap! board assoc-in [11 6] :z)
 
 (pause!)
 (play!)
