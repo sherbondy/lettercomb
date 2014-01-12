@@ -24,7 +24,7 @@
 (defn rand-letter []
   "ascii lower case starts at 97"
   (String/fromCharCode
-   (+ 97
+   (+ 65
       (Math/floor
        (* (Math/random) 26)))))
 
@@ -57,7 +57,7 @@
   (.fill ctx)
   (.stroke ctx))
 
-(def font-size 12)
+(def font-size 16)
 (def q-font-size (/ font-size 4))
 
 ;; eventually map colors based on frequency/point-value
@@ -109,7 +109,7 @@
   (js/requestAnimationFrame game-loop)
   (when @playing?
     (blacken! ctx)
-    (fill-board! ctx [10 19] 16 [30 24])))
+    (fill-board! ctx [6 12] 24 [48 40])))
 
 (game-loop)
 
