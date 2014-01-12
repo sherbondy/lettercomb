@@ -57,7 +57,7 @@
   (.fill ctx)
   (.stroke ctx))
 
-(def font-size 24)
+(def font-size 12)
 (def q-font-size (/ font-size 4))
 
 ;; eventually map colors based on frequency/point-value
@@ -109,7 +109,7 @@
   (js/requestAnimationFrame game-loop)
   (when @playing?
     (blacken! ctx)
-    (fill-board! ctx [10 19] 32 [60 48])))
+    (fill-board! ctx [10 19] 16 [30 24])))
 
 (game-loop)
 

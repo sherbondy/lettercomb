@@ -1,0 +1,3 @@
+[submodule "Ejecta"]
+	path = Ejecta
+	url = git@github.com:phoboslab/Ejecta.git
