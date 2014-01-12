@@ -1,5 +1,8 @@
 (ns lettercomb.core)
 
+;; add a device orientation listenr and rotate
+;; letters based on alpha
+
 (def canvas (.getElementById js/document "canvas"))
 (def ctx (.getContext canvas "2d"))
 
@@ -84,13 +87,43 @@
     [(+ left (* col hex-w) x-offset)
      (+ top  (* row y-offset))]))
 
-(defn fill-board! [ctx [cols rows] radius left-top]
+;; define a board in terms of its top-left hexagon center
+;; and the constituent columns and rows going down.
+;; could compactly represent as a bit vector
+;; max dims = 7 x 12 = 84 entries, 84 bits
+
+;; grid terminology from
+;; http://www.redblobgames.com/grids/hexagons/#conversions
+
+;; probably want to represent as UInt8Array
+(defn make-rect-board [cols rows]
+  "boards are stored in odd-r offset coords"
+  (vec (for [j (range rows)]
+         (vec (for [i (range cols)]
+                :blank)))))
+
+(defn get-odd-r [board [col row]]
+  "get hex at index col, row using odd-r offset coords"
+  (get-in board [row col]))
+
+(defn get-cube [board [x z]]
+  "get hex at index x, z using cube coords"
+  (let [q (+ x (/ (- z (bit-and z 1)) 2))
+        r z]
+    (get-in board [z q])))
+
+(def board (atom (make-rect-board 7 12)))
+
+(defn fill-board! [ctx board radius left-top]
   "left-top = the [left top] center point."
-  (doseq [i (range cols)
-          j (range rows)]
-    (let [center (center-at [i j] left-top radius)]
-      (draw-letter-hex! ctx center radius
-                        (rand-letter)))))
+  (doseq [row (range (count board))
+          col (range (count (nth board row)))]
+    (let [center (center-at [col row] left-top radius)
+          letter (get-odd-r board [col row])]
+      (if (= :blank letter)
+        (draw-hexagon! ctx center radius)
+        (draw-letter-hex! ctx center radius
+                          (name letter))))))
 
 (def playing? (atom true))
 
@@ -109,9 +142,11 @@
   (js/requestAnimationFrame game-loop)
   (when @playing?
     (blacken! ctx)
-    (fill-board! ctx [6 12] 24 [48 40])))
+    (fill-board! ctx @board 24 [24 40])))
 
 (game-loop)
+
+;; (swap! board assoc-in [0 0] :a)
 
 (pause!)
 (play!)
