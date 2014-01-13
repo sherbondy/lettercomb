@@ -1,5 +1,9 @@
 (ns lettercomb.core
-  (:require [lettercomb.letters :as l]))
+  (:require [lettercomb.letters :as l]
+            [cljs.core.async :refer
+             [>! <! chan map< put! take! timeout close!]])
+  (:require-macros [cljs.core.async.macros
+                    :refer [go alt!]]))
 
 ;; add a device orientation listenr and rotate
 ;; letters based on alpha
@@ -110,6 +114,8 @@
     (get-in board [z q])))
 
 (def board (atom (make-rect-board 7 12)))
+(def left-top [24 40])
+(def radius 24)
 
 (defn fill-board! [ctx board left-top radius]
   "left-top = the [left top] center point."
@@ -127,11 +133,9 @@
         mid-col (Math/floor (/ (count (board 0)) 2))]
     (center-at [mid-col mid-row] left-top radius)))
 
-;; (board-center @board [24 40] 24)
-
 (defn draw-cannon! [ctx board left-top radius
                     angle next-letter]
-  (let [center (board-center board [24 40] 24)]
+  (let [center (board-center board left-top radius)]
     (.save ctx)
     (.translate ctx (center 0) (center 1))
     (.rotate ctx angle)
@@ -157,18 +161,45 @@
 (set! (.-font ctx)
       (str "bold " font-size "px Courier"))
 
-(def angle (atom 1.6))
+(def angle (atom Math/PI))
 (def next-letter (atom :A))
+
+(defn events [el type]
+  (let [out (chan)]
+    (.addEventListener el type
+      (fn [e] (put! out e)))
+    out))
+
+(defn e->v [e]
+  "convert a js Event object to a location vector"
+  [(.-pageX e) (.-pageY e)])
+
+(defn ev-angle [[cx cy] [ex ey]]
+  "given a center point and an event's coords,
+   determine the angle between the two points"
+  (Math/atan2 (- ex cx)
+              (- cy ey)))
+
+(defn e->angle [e]
+  (let [center (board-center @board left-top radius)
+        true-c [(+ (center 0) (.-offsetLeft canvas))
+                (+ (center 1) (.-offsetTop canvas))]]
+    ((comp (partial ev-angle center) e->v)
+     e)))
+
+(let [move (map< e->angle
+                 (events js/window "mousemove"))]
+  (go
+   (while true
+     (reset! angle (<! move)))))
 
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
   (when @playing?
     (blacken! ctx)
-    (let [left-top [24 40]
-          radius   24]
       (fill-board! ctx @board left-top radius)
       (draw-cannon! ctx @board left-top radius
-                    @angle @next-letter))))
+                    @angle @next-letter)))
 
 (game-loop)
 
@@ -180,8 +211,8 @@
              [start-row (+ i start-col)]
              (keyword (nth up-word i))))))
 
-(write-word! board [0 1] "letter")
-(write-word! board [1 2] "comb")
+(write-word! board [1 0] "letter")
+(write-word! board [1 1] "comb")
 
 ;; (swap! board assoc-in [0 0] :a)
 ;; (swap! board assoc-in [11 6] :z)
