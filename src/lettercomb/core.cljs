@@ -55,6 +55,11 @@
 (def font-size 16)
 (def q-font-size (/ font-size 4))
 
+(defn draw-letter! [ctx [cx cy] letter]
+  (.fillText ctx letter
+             (- cx q-font-size)
+             (+ cy q-font-size)))
+
 ;; eventually map colors based on frequency/point-value
 (defn letter-color [letter]
   "expects a keyword"
@@ -65,9 +70,7 @@
   (draw-hexagon! ctx center radius
                  (letter-color letter))
   (set! (.-fillStyle ctx) "#fff")
-  (.fillText ctx (name letter)
-             (- (center 0) q-font-size)
-             (+ (center 1) q-font-size)))
+  (draw-letter! ctx center (name letter)))
 
 (defn width [radius]
   (* 2.0 radius (Math/cos (/ Math/PI 6.0))))
@@ -108,7 +111,7 @@
 
 (def board (atom (make-rect-board 7 12)))
 
-(defn fill-board! [ctx board radius left-top]
+(defn fill-board! [ctx board left-top radius]
   "left-top = the [left top] center point."
   (doseq [row (range (count board))
           col (range (count (nth board row)))]
@@ -118,6 +121,28 @@
         (draw-hexagon! ctx center radius)
         (draw-letter-hex! ctx center radius
                           letter)))))
+
+(defn board-center [board left-top radius]
+  (let [mid-row (Math/floor (/ (count board) 2))
+        mid-col (Math/floor (/ (count (board 0)) 2))]
+    (center-at [mid-col mid-row] left-top radius)))
+
+;; (board-center @board [24 40] 24)
+
+(defn draw-cannon! [ctx board left-top radius
+                    angle next-letter]
+  (let [center (board-center board [24 40] 24)]
+    (.save ctx)
+    (.translate ctx (center 0) (center 1))
+    (.rotate ctx angle)
+    (.translate ctx (* -1 (center 0)) (* -1 (center 1)))
+    (draw-hexagon! ctx center radius "#fff")
+    (draw-hexagon! ctx
+                   [(center 0) (- (center 1) radius)]
+                   radius "#fff")
+    (.restore ctx)
+    (set! (.-fillStyle ctx) "#000")
+    (draw-letter! ctx center (name next-letter))))
 
 (def playing? (atom true))
 
@@ -132,11 +157,18 @@
 (set! (.-font ctx)
       (str "bold " font-size "px Courier"))
 
+(def angle (atom 1.6))
+(def next-letter (atom :A))
+
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
   (when @playing?
     (blacken! ctx)
-    (fill-board! ctx @board 24 [24 40])))
+    (let [left-top [24 40]
+          radius   24]
+      (fill-board! ctx @board left-top radius)
+      (draw-cannon! ctx @board left-top radius
+                    @angle @next-letter))))
 
 (game-loop)
 
