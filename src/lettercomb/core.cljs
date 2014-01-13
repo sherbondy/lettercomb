@@ -1,4 +1,5 @@
-(ns lettercomb.core)
+(ns lettercomb.core
+  (:require [lettercomb.letters :as l]))
 
 ;; add a device orientation listenr and rotate
 ;; letters based on alpha
@@ -21,15 +22,6 @@
        (rand-hex-str)
        (rand-hex-str)
        (rand-hex-str)))
-
-;; this should really be at the frequency of
-;; letter appearances in english words
-(defn rand-letter []
-  "ascii lower case starts at 97"
-  (String/fromCharCode
-   (+ 65
-      (Math/floor
-       (* (Math/random) 26)))))
 
 (defn hex-point [[cx cy] radius i]
   "Point i of a hexagon with radius and center [cx, cy]"
@@ -65,13 +57,15 @@
 
 ;; eventually map colors based on frequency/point-value
 (defn letter-color [letter]
-  (rand-color-str))
+  "expects a keyword"
+  (l/point-colors
+   (get l/letter-points letter "#000")))
 
 (defn draw-letter-hex! [ctx center radius letter]
   (draw-hexagon! ctx center radius
                  (letter-color letter))
   (set! (.-fillStyle ctx) "#fff")
-  (.fillText ctx letter
+  (.fillText ctx (name letter)
              (- (center 0) q-font-size)
              (+ (center 1) q-font-size)))
 
@@ -123,7 +117,7 @@
       (if (= :blank letter)
         (draw-hexagon! ctx center radius)
         (draw-letter-hex! ctx center radius
-                          (name letter))))))
+                          letter)))))
 
 (def playing? (atom true))
 
@@ -146,12 +140,13 @@
 
 (game-loop)
 
+;; @TODO: should do bounds checking and maybe auto-wap to next row
 (defn write-word! [board [start-col start-row] word]
   (let [up-word (.toUpperCase word)]
     (doseq [i (range (count up-word))]
       (swap! board assoc-in
              [start-row (+ i start-col)]
-             (nth up-word i)))))
+             (keyword (nth up-word i))))))
 
 (write-word! board [0 1] "letter")
 (write-word! board [1 2] "comb")
