@@ -1,9 +1,5 @@
 (ns lettercomb.core
-  (:require [lettercomb.letters :as l]
-            [cljs.core.async :refer
-             [>! <! chan map< put! take! timeout close!]])
-  (:require-macros [cljs.core.async.macros
-                    :refer [go alt!]]))
+  (:require [lettercomb.letters :as l]))
 
 ;; add a device orientation listenr and rotate
 ;; letters based on alpha
@@ -164,11 +160,6 @@
 (def angle (atom Math/PI))
 (def next-letter (atom :A))
 
-(defn events [el type]
-  (let [out (chan)]
-    (.addEventListener el type
-      (fn [e] (put! out e)))
-    out))
 
 (defn e->v [e]
   "convert a js Event object to a location vector"
@@ -187,11 +178,10 @@
     ((comp (partial ev-angle center) e->v)
      e)))
 
-(let [move (map< e->angle
-                 (events js/window "mousemove"))]
-  (go
-   (while true
-     (reset! angle (<! move)))))
+(defn handle-move [e]
+  (reset! angle (e->angle e)))
+
+(.addEventListener canvas "mousemove" handle-move)
 
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
@@ -211,8 +201,8 @@
              [start-row (+ i start-col)]
              (keyword (nth up-word i))))))
 
-(write-word! board [1 0] "letter")
-(write-word! board [1 1] "comb")
+(write-word! board [0 0] "hello")
+(write-word! board [1 1] "there")
 
 ;; (swap! board assoc-in [0 0] :a)
 ;; (swap! board assoc-in [11 6] :z)
