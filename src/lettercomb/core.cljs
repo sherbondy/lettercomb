@@ -2,8 +2,17 @@
   (:require [lettercomb.letters :as l]
             [lettercomb.grid :as g]))
 
-;; add a device orientation listenr and rotate
+;; add a device orientation listener and rotate
 ;; letters based on alpha
+
+(def left-top [24 40])
+(def radius 24)
+
+;; MASSACHUSETTS
+(def board         (atom (g/make-rect-board 7 12)))
+(def angle         (atom Math/PI))
+(def hovered-cell  (atom [0 0]))
+(def next-letter   (atom :A))
 
 (def canvas (.getElementById js/document "canvas"))
 (def ctx (.getContext canvas "2d"))
@@ -85,10 +94,6 @@
     [(+ left (* col hex-w) x-offset)
      (+ top  (* row y-offset))]))
 
-(def board (atom (g/make-rect-board 7 12)))
-(def left-top [24 40])
-(def radius 24)
-
 (defn fill-board! [ctx board left-top radius]
   "left-top = the [left top] center point."
   (doseq [row (range (count board))
@@ -151,12 +156,6 @@
 ;; track of the last value...
 ;; pixel -> hex algo:
 
-
-(def angle (atom Math/PI))
-(def hovered-cell (atom [0 0]))
-(def next-letter (atom :A))
-
-
 (defn e->v [e]
   "convert a js Event object to a location vector"
   [(.-pageX e) (.-pageY e)])
@@ -167,22 +166,24 @@
   (Math/atan2 (- ex cx)
               (- cy ey)))
 
-(defn e->angle [e]
+(defn v->angle [v]
   (let [center (board-center @board left-top radius)
         true-c [(+ (center 0) (.-offsetLeft canvas))
                 (+ (center 1) (.-offsetTop canvas))]]
-    ((comp (partial ev-angle center) e->v)
-     e)))
+    (ev-angle center v)))
 
-(defn e->odd-r [e]
+(defn v->odd-r [v]
   ((comp g/axial-to-odd-r
-        (partial g/pixel-to-axial left-top radius)
-        e->v)
-    e))
+        (partial g/pixel-to-axial left-top radius))
+    v))
+
+(defn v->ray [v]
+  v)
 
 (defn handle-move [e]
-  (reset! angle (e->angle e))
-  (reset! hovered-cell (e->odd-r e)))
+  (let [v (e->v e)]
+    (reset! angle (v->angle v))
+    (reset! hovered-cell (v->odd-r v))))
 
 (.addEventListener canvas "mousemove" handle-move)
 
