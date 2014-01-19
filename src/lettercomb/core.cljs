@@ -1,5 +1,6 @@
 (ns lettercomb.core
-  (:require [lettercomb.letters :as l]))
+  (:require [lettercomb.letters :as l]
+            [lettercomb.grid :as g]))
 
 ;; add a device orientation listenr and rotate
 ;; letters based on alpha
@@ -84,32 +85,7 @@
     [(+ left (* col hex-w) x-offset)
      (+ top  (* row y-offset))]))
 
-;; define a board in terms of its top-left hexagon center
-;; and the constituent columns and rows going down.
-;; could compactly represent as a bit vector
-;; max dims = 7 x 12 = 84 entries, 84 bits
-
-;; grid terminology from
-;; http://www.redblobgames.com/grids/hexagons/#conversions
-
-;; probably want to represent as UInt8Array
-(defn make-rect-board [cols rows]
-  "boards are stored in odd-r offset coords"
-  (vec (for [j (range rows)]
-         (vec (for [i (range cols)]
-                :blank)))))
-
-(defn get-odd-r [board [col row]]
-  "get hex at index col, row using odd-r offset coords"
-  (get-in board [row col]))
-
-(defn get-cube [board [x z]]
-  "get hex at index x, z using cube coords"
-  (let [q (+ x (/ (- z (bit-and z 1)) 2))
-        r z]
-    (get-in board [z q])))
-
-(def board (atom (make-rect-board 7 12)))
+(def board (atom (g/make-rect-board 7 12)))
 (def left-top [24 40])
 (def radius 24)
 
@@ -118,9 +94,11 @@
   (doseq [row (range (count board))
           col (range (count (nth board row)))]
     (let [center (center-at [col row] left-top radius)
-          letter (get-odd-r board [col row])]
+          letter (g/get-odd-r board [col row])]
       (if (= :blank letter)
-        (draw-hexagon! ctx center radius)
+        (draw-hexagon! ctx center radius
+                       (if (= @hovered-cell [col row])
+                         "#fff" "#000"))
         (draw-letter-hex! ctx center radius
                           letter)))))
 
@@ -157,7 +135,25 @@
 (set! (.-font ctx)
       (str "bold " font-size "px Courier"))
 
+
+;; idea for intersection code:
+;; shoot ray from center. Sample at regular interval
+;; to ensure that we always sample every hexagon along
+;; a path.
+;; for each sample, determine if it is contained in
+;; a hexagon. Then lookup the hexagon to see if it is
+;; occupied. As we go along the path, build up
+;; a list of visited hexagons. The moment we have
+;; an intersection with an occupied hex, or
+;; we have run out of valid hexagons, then pop
+;; the last value to get the destination.
+;; do not actually need a list, just need to keep
+;; track of the last value...
+;; pixel -> hex algo:
+
+
 (def angle (atom Math/PI))
+(def hovered-cell (atom [0 0]))
 (def next-letter (atom :A))
 
 
@@ -178,8 +174,15 @@
     ((comp (partial ev-angle center) e->v)
      e)))
 
+(defn e->odd-r [e]
+  ((comp g/axial-to-odd-r
+        (partial g/pixel-to-axial left-top radius)
+        e->v)
+    e))
+
 (defn handle-move [e]
-  (reset! angle (e->angle e)))
+  (reset! angle (e->angle e))
+  (reset! hovered-cell (e->odd-r e)))
 
 (.addEventListener canvas "mousemove" handle-move)
 
@@ -193,7 +196,8 @@
 
 (game-loop)
 
-;; @TODO: should do bounds checking and maybe auto-wap to next row
+;; @TODO: should do bounds checking and maybe
+;; auto-wap to next row
 (defn write-word! [board [start-col start-row] word]
   (let [up-word (.toUpperCase word)]
     (doseq [i (range (count up-word))]
@@ -206,6 +210,8 @@
 
 ;; (swap! board assoc-in [0 0] :a)
 ;; (swap! board assoc-in [11 6] :z)
+
+;; (g/pixel-to-axial [100 100] left-top radius)
 
 (pause!)
 (play!)
