@@ -112,9 +112,7 @@
         mid-col (Math/floor (/ (count (board 0)) 2))]
     (center-at [mid-col mid-row] left-top radius)))
 
-(defn draw-cannon! [ctx board left-top radius
-                    angle next-letter]
-  (let [center (board-center board left-top radius)]
+(defn draw-cannon! [ctx center radius angle next-letter]
     (.save ctx)
     (.translate ctx (center 0) (center 1))
     (.rotate ctx angle)
@@ -125,7 +123,7 @@
                    radius "#fff")
     (.restore ctx)
     (set! (.-fillStyle ctx) "#000")
-    (draw-letter! ctx center (name next-letter))))
+    (draw-letter! ctx center (name next-letter)))
 
 (def playing? (atom true))
 
@@ -160,30 +158,75 @@
   "convert a js Event object to a location vector"
   [(.-pageX e) (.-pageY e)])
 
-(defn ev-angle [[cx cy] [ex ey]]
+(defn v->angle [[cx cy] [ex ey]]
   "given a center point and an event's coords,
    determine the angle between the two points"
   (Math/atan2 (- ex cx)
               (- cy ey)))
-
-(defn v->angle [v]
-  (let [center (board-center @board left-top radius)
-        true-c [(+ (center 0) (.-offsetLeft canvas))
-                (+ (center 1) (.-offsetTop canvas))]]
-    (ev-angle center v)))
 
 (defn v->odd-r [v]
   ((comp g/axial-to-odd-r
         (partial g/pixel-to-axial left-top radius))
     v))
 
-(defn v->ray [v]
-  v)
+;; needs better name
+(defn next-coord [angle radius [x y]]
+  "Given the [x y] position of a cell in odd-r,
+   and an angle of movement, determine another next
+   position in the same direction"
+   (let [next-x (+ x (* (Math/sin angle) radius))
+         next-y (- y (* (Math/cos angle) radius))]
+     [next-x next-y]))
+
+(defn out-of-bounds? [board [col row]]
+  (let [n-rows (count board)
+        n-cols (count (first board))]
+    (or (>= col n-cols)
+        (< col 0)
+        (>= row n-rows)
+        (< row 0))))
+
+;; point = the origin point of the cannon
+;; or the current point
+(defn destination-cell [board angle radius point]
+  (let [[x y :as dest-coords]
+        (next-coord angle radius point)
+        [col row :as dest-cell]
+         (v->odd-r dest-coords)]
+    ;; if next cell is occupied or out of bounds,
+    ;; destination is at the current point's cell
+    (if (or (not= :blank (get-in board [row col]))
+            (out-of-bounds? board dest-cell))
+      (v->odd-r point)
+      ;; otherwise, keep going down the line
+      (destination-cell board angle radius
+                        dest-coords))))
+
+;; (next-cell 0 32 [0 250])
+;; (destination-cell @board 0 radius
+;;   (board-center @board left-top radius))
+
+;; (board-center @board left-top radius)
+
+(def canvas-offset
+  [(.-offsetLeft canvas) (.-offsetTop canvas)])
+
+(def the-center
+  (board-center @board left-top radius))
+
+;; the center of the board relative to the whole page
+;; only useful in browser, not ejecta...
+(def page-center
+  [(+ (the-center 0) (canvas-offset 0))
+   (+ (the-center 1) (canvas-offset 1))])
 
 (defn handle-move [e]
-  (let [v (e->v e)]
-    (reset! angle (v->angle v))
-    (reset! hovered-cell (v->odd-r v))))
+  (let [v (e->v e)
+        new-angle (v->angle page-center v)]
+    (reset! angle new-angle)
+    (reset! hovered-cell
+            (destination-cell @board new-angle radius
+                              v))))
 
 (.addEventListener canvas "mousemove" handle-move)
 
@@ -192,7 +235,7 @@
   (when @playing?
     (blacken! ctx)
       (fill-board! ctx @board left-top radius)
-      (draw-cannon! ctx @board left-top radius
+      (draw-cannon! ctx the-center radius
                     @angle @next-letter)))
 
 (game-loop)

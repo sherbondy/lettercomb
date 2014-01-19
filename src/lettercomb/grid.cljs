@@ -19,11 +19,15 @@
 ;; in certain algorithms
 
 ;; probably want to represent as UInt8Array
-;; maybe we should redefine the board to be col, row
+;; @TODO: maybe we should redefine the board to be col, row
 ;; instead of row, col
 
 ;; maybe I should use logic programming
 ;; so I don't have to define inverse operations...
+
+;; if we keep the grid as a vector, we gain the
+;; advantage of structural sharing for the history
+;; of a board, so replays become trivial!
 
 (defn make-rect-board [cols rows]
   "boards are stored in odd-r offset coords"
