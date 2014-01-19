@@ -5,6 +5,9 @@
 ;; add a device orientation listener and rotate
 ;; letters based on alpha
 
+;; should be very careful to distinguish between
+;; @board and board as arguments to functions...
+
 (def left-top [24 40])
 (def radius 24)
 
@@ -220,6 +223,20 @@
   [(+ (the-center 0) (canvas-offset 0))
    (+ (the-center 1) (canvas-offset 1))])
 
+(defn write-letter! [a-board [col row] letter-kw]
+  (swap! a-board assoc-in [row col]
+         letter-kw))
+
+;; @TODO: should do bounds checking and maybe
+;; auto-wap to next row
+(defn write-word! [a-board [start-col start-row] word]
+  (let [up-word (.toUpperCase word)]
+    (doseq [i (range (count up-word))]
+      (write-letter! a-board
+                     [(+ i start-col) start-row]
+                     (keyword (nth up-word i))))))
+
+
 (defn handle-move [e]
   (let [v (e->v e)
         new-angle (v->angle page-center v)]
@@ -228,7 +245,12 @@
             (destination-cell @board new-angle radius
                               v))))
 
+(defn handle-release [e]
+  (handle-move e)
+  (write-letter! board @hovered-cell @next-letter))
+
 (.addEventListener canvas "mousemove" handle-move)
+(.addEventListener canvas "mouseup" handle-release)
 
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
@@ -239,15 +261,6 @@
                     @angle @next-letter)))
 
 (game-loop)
-
-;; @TODO: should do bounds checking and maybe
-;; auto-wap to next row
-(defn write-word! [board [start-col start-row] word]
-  (let [up-word (.toUpperCase word)]
-    (doseq [i (range (count up-word))]
-      (swap! board assoc-in
-             [start-row (+ i start-col)]
-             (keyword (nth up-word i))))))
 
 (write-word! board [0 0] "hello")
 (write-word! board [1 1] "there")
