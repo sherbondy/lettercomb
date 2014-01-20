@@ -1,5 +1,30 @@
 (ns lettercomb.letters)
 
+;; HELPER FUNCTIONS
+
+;; should make a binary "closest" search...
+
+(defn binary-search
+  "Finds earliest occurrence of x in xs (a vector) using binary search.
+  If x is between two values, return the larger index."
+  [xs x]
+  (loop [low 0 high (dec (count xs))]
+    (if (<= high (inc low))
+      (cond
+        (== x (xs low)) low
+        (== x (xs high)) high
+        (and (< x (xs high))
+             (> x (xs low))) high
+        (<  x (xs low)) low
+        (>  x (xs high)) high
+        :else nil)
+      (let [mid (+ low (bit-shift-right (- high low) 1))]
+        (if (< (xs mid) x)
+          (recur (inc mid) high)
+          (recur low mid))))))
+
+;; (binary-search [1 2 3 4 5 6 7 8] 1)
+
 ;; based on
 ;; http://en.wikipedia.org/wiki/Letter_frequency#Relative_frequencies_of_letters_in_the_English_language
 (def letter-freqs
@@ -28,7 +53,23 @@
    :W	2.360
    :X	0.150
    :Y	1.974
-   :Z	0.074})
+   :Z	0.075})
+
+(defn letter-at-index [i]
+  (keyword (String/fromCharCode
+            (+ 65 i))))
+
+(defn make-cumulative-freqs [letter-freqs i result-vec]
+  (if (< i 26)
+    (let [next-freq (letter-freqs (letter-at-index i))
+          total     (+ (last result-vec) next-freq)]
+      (make-cumulative-freqs letter-freqs
+                             (inc i)
+                             (conj result-vec total)))
+    result-vec))
+
+(def cumulative-freqs
+  (make-cumulative-freqs letter-freqs 0 []))
 
 (def point-letters
   {1 #{:E :A :I :O :N :R :T :L :S :U}
@@ -59,8 +100,8 @@
 ;; letter appearances in english words
 (defn rand-letter []
   "ascii lower case starts at 97"
-  (keyword
-   (String/fromCharCode
-     (+ 65
-        (Math/floor
-         (* (Math/random) 26))))))
+  (letter-at-index
+    (binary-search
+      cumulative-freqs
+      (Math/floor
+        (* (Math/random) 100)))))

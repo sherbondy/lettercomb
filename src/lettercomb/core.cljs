@@ -236,6 +236,8 @@
                      [(+ i start-col) start-row]
                      (keyword (nth up-word i))))))
 
+(defn pick-random-letter! []
+  (reset! next-letter (l/rand-letter)))
 
 (defn handle-move [e]
   (let [v (e->v e)
@@ -247,7 +249,8 @@
 
 (defn handle-release [e]
   (handle-move e)
-  (write-letter! board @hovered-cell @next-letter))
+  (write-letter! board @hovered-cell @next-letter)
+  (pick-random-letter!))
 
 (.addEventListener canvas "mousemove" handle-move)
 (.addEventListener canvas "mouseup" handle-release)
