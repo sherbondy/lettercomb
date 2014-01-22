@@ -247,13 +247,28 @@
             (destination-cell @board new-angle radius
                               v))))
 
+(defn first-touch [e]
+  (first (.-changedTouches e)))
+
+(defn handle-touch-move [e]
+  (let [touch (first-touch e)]
+    (handle-move touch)))
+
 (defn handle-release [e]
   (handle-move e)
   (write-letter! board @hovered-cell @next-letter)
+  (reset! hovered-cell nil)
   (pick-random-letter!))
 
-(.addEventListener canvas "mousemove" handle-move)
-(.addEventListener canvas "mouseup" handle-release)
+(defn handle-touch-release [e]
+  (let [touch (first-touch e)]
+    (handle-release touch)))
+
+;; (.addEventListener canvas "mousemove" handle-move)
+;; (.addEventListener canvas "mouseup" handle-release)
+
+(.addEventListener canvas "touchmove" handle-touch-move)
+(.addEventListener canvas "touchend" handle-touch-release)
 
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
