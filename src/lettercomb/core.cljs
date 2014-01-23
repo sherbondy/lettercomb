@@ -181,29 +181,28 @@
          next-y (- y (* (Math/cos angle) radius))]
      [next-x next-y]))
 
-(defn out-of-bounds? [board [col row]]
-  (let [n-rows (count board)
-        n-cols (count (first board))]
-    (or (>= col n-cols)
-        (< col 0)
-        (>= row n-rows)
-        (< row 0))))
+(defn out-of-bounds? [board point]
+  (nil? (g/get-odd-r board point)))
+
+(defn occupied? [board cell]
+  (not= :blank (g/get-odd-r board cell)))
 
 ;; point = the origin point of the cannon
 ;; or the current point
 (defn destination-cell [board angle radius point]
-  (let [[x y :as dest-coords]
-        (next-coord angle radius point)
-        [col row :as dest-cell]
-         (v->odd-r dest-coords)]
+  (let [[x y :as dest-coords]   (next-coord angle radius point)
+        [col row :as dest-cell] (v->odd-r dest-coords)
+        current-cell            (v->odd-r point)]
     ;; if next cell is occupied or out of bounds,
     ;; destination is at the current point's cell
-    (if (or (not= :blank (get-in board [row col]))
+    (if (or (occupied? board dest-cell)
             (out-of-bounds? board dest-cell))
-      (v->odd-r point)
+      (if (not (or (occupied? board current-cell)
+                   (out-of-bounds? board current-cell)))
+        current-cell
+        nil)
       ;; otherwise, keep going down the line
-      (destination-cell board angle radius
-                        dest-coords))))
+      (recur board angle radius dest-coords))))
 
 ;; (next-cell 0 32 [0 250])
 ;; (destination-cell @board 0 radius
@@ -243,9 +242,8 @@
   (let [v (e->v e)
         new-angle (v->angle page-center v)]
     (reset! angle new-angle)
-    (reset! hovered-cell
-            (destination-cell @board new-angle radius
-                              v))))
+    (let [dest (destination-cell @board new-angle radius v)]
+      (reset! hovered-cell dest))))
 
 (defn first-touch [e]
   (first (.-changedTouches e)))
@@ -256,19 +254,23 @@
 
 (defn handle-release [e]
   (handle-move e)
-  (write-letter! board @hovered-cell @next-letter)
-  (reset! hovered-cell nil)
+  (when @hovered-cell
+    (write-letter! board @hovered-cell @next-letter)
+    (reset! hovered-cell nil))
   (pick-random-letter!))
 
 (defn handle-touch-release [e]
   (let [touch (first-touch e)]
     (handle-release touch)))
 
-;; (.addEventListener canvas "mousemove" handle-move)
-;; (.addEventListener canvas "mouseup" handle-release)
-
-(.addEventListener canvas "touchmove" handle-touch-move)
-(.addEventListener canvas "touchend" handle-touch-release)
+(defn add-event-listeners []
+  (if-not (.-ejecta js/window)
+    (do
+      (.addEventListener canvas "mousemove" handle-move)
+      (.addEventListener canvas "mouseup" handle-release))
+    (do
+      (.addEventListener canvas "touchmove" handle-touch-move)
+      (.addEventListener canvas "touchend" handle-touch-release))))
 
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
@@ -278,6 +280,7 @@
       (draw-cannon! ctx the-center radius
                     @angle @next-letter)))
 
+(add-event-listeners)
 (game-loop)
 
 (write-word! board [0 0] "hello")

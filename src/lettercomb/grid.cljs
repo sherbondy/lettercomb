@@ -73,6 +73,9 @@
   (let [[q r] (cube-to-odd-r xz)]
     (get-in board [r q])))
 
+(defn get-odd-r [board [col row]]
+  (get-in board [row col]))
+
 ;; (pr-str (get-cube @board [0 0]))
 
 ;; q = (1/3*sqrt(3) * x - 1/3 * y) / size
