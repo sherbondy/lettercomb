@@ -239,6 +239,9 @@
   (swap! a-board assoc-in [row col]
          letter-kw))
 
+(defn clear-cell! [a-board cell]
+  (write-letter! a-board cell :blank))
+
 ;; @TODO: should do bounds checking and maybe
 ;; auto-wap to next row
 (defn write-word! [a-board [start-col start-row] word]
@@ -289,6 +292,10 @@
           (for [cell word-cells]
             (name (g/get-odd-r board cell))))))
 
+(defn clear-selected-word! [a-board word-cells]
+  (doseq [cell word-cells]
+    (clear-cell! a-board cell)))
+
 (defn handle-release [e]
   (reset! touch-down? false)
   (handle-move e)
@@ -300,7 +307,9 @@
   (let [hovered-word (selected-word @board
                                     @current-word-cells)]
     (when (contains? word-set hovered-word)
-      (.log js/console (str hovered-word " is a real word...")))
+      (.log js/console (str hovered-word " is a real word..."))
+      (clear-selected-word! board @current-word-cells)
+      (reset! current-word-cells []))
   ))
 
 (defn handle-touch-release [e]
