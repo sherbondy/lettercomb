@@ -1,4 +1,5 @@
-(ns lettercomb.letters)
+(ns lettercomb.letters
+  (:require [clojure.string :as str]))
 
 ;; HELPER FUNCTIONS
 
@@ -95,6 +96,13 @@
    5  "#00a"
    8  "#60a"
    10 "#a0a"})
+
+(defn darken [color]
+  "fake color darkening"
+  (->
+   color
+   (str/replace "6" "3")
+   (str/replace "a" "7")))
 
 ;; this should really be at the frequency of
 ;; letter appearances in english words

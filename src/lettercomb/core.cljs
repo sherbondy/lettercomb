@@ -1,6 +1,7 @@
 (ns lettercomb.core
   (:require [lettercomb.letters :as l]
-            [lettercomb.grid :as g]))
+            [lettercomb.grid :as g]
+            [clojure.string :as str]))
 
 ;; add a device orientation listener and rotate
 ;; letters based on alpha
@@ -12,13 +13,22 @@
 (def radius 24)
 
 ;; MASSACHUSETTS
-(def board         (atom (g/make-rect-board 7 12)))
-(def angle         (atom Math/PI))
-(def hovered-cell  (atom [0 0]))
-(def next-letter   (atom :A))
+(def board               (atom (g/make-rect-board 7 12)))
+(def angle               (atom Math/PI))
+;; the currently hovered cell
+(def hovered-cell        (atom [0 0]))
+;; the cell in the cannon's trajectory
+(def open-cell           (atom [0 0]))
+(def next-letter         (atom :A))
+;; maintain a vector of the currently hovered word cells
+(def current-word-cells  (atom []))
+(def touch-down?         (atom false))
 
 (def canvas (.getElementById js/document "canvas"))
 (def ctx (.getContext canvas "2d"))
+
+(def word-set (set js/WORDS))
+(.log js/console (contains? word-set "hello"))
 
 (defn blacken! [ctx]
   (set! (.-fillStyle ctx) "#000")
@@ -79,9 +89,8 @@
   (l/point-colors
    (get l/letter-points letter "#000")))
 
-(defn draw-letter-hex! [ctx center radius letter]
-  (draw-hexagon! ctx center radius
-                 (letter-color letter))
+(defn draw-letter-hex! [ctx center radius letter color]
+  (draw-hexagon! ctx center radius color)
   (set! (.-fillStyle ctx) "#fff")
   (draw-letter! ctx center (name letter)))
 
@@ -105,10 +114,13 @@
           letter (g/get-odd-r board [col row])]
       (if (= :blank letter)
         (draw-hexagon! ctx center radius
-                       (if (= @hovered-cell [col row])
+                       (if (= @open-cell [col row])
                          "#fff" "#000"))
-        (draw-letter-hex! ctx center radius
-                          letter)))))
+        (let [color (if (= @hovered-cell [col row])
+                      (l/darken (letter-color letter))
+                      (letter-color letter))]
+          (draw-letter-hex! ctx center radius
+                            letter color))))))
 
 (defn board-center [board left-top radius]
   (let [mid-row (Math/floor (/ (count board) 2))
@@ -159,7 +171,8 @@
 
 (defn e->v [e]
   "convert a js Event object to a location vector"
-  [(.-pageX e) (.-pageY e)])
+  [(- (.-pageX e) (.-offsetLeft canvas))
+   (- (.-pageY e) (.-offsetTop canvas))])
 
 (defn v->angle [[cx cy] [ex ey]]
   "given a center point and an event's coords,
@@ -238,12 +251,30 @@
 (defn pick-random-letter! []
   (reset! next-letter (l/rand-letter)))
 
+(defn hover-cell! [e]
+  (let [v     (e->v e)
+        coord (v->odd-r v)]
+    (reset! hovered-cell coord)))
+
 (defn handle-move [e]
-  (let [v (e->v e)
+  (let [v         (e->v e)
         new-angle (v->angle page-center v)]
     (reset! angle new-angle)
     (let [dest (destination-cell @board new-angle radius v)]
-      (reset! hovered-cell dest))))
+      (reset! open-cell dest)))
+
+  (when @touch-down?
+    (hover-cell! e)
+
+    ;;continue building up the hovered word
+    (if (occupied? @board @hovered-cell)
+      (when (and
+             (not (empty? @current-word-cells))
+             (not (contains? (set @current-word-cells)
+                             @hovered-cell)))
+        (swap! current-word-cells conj @hovered-cell))
+      ;; if hovered cell is unoccupied , reset current word
+      (reset! current-word-cells []))))
 
 (defn first-touch [e]
   (first (.-changedTouches e)))
@@ -252,25 +283,59 @@
   (let [touch (first-touch e)]
     (handle-move touch)))
 
+(defn selected-word [board word-cells]
+  (str/lower-case
+   (apply str
+          (for [cell word-cells]
+            (name (g/get-odd-r board cell))))))
+
 (defn handle-release [e]
+  (reset! touch-down? false)
   (handle-move e)
-  (when @hovered-cell
-    (write-letter! board @hovered-cell @next-letter)
-    (reset! hovered-cell nil))
-  (pick-random-letter!))
+  (when @open-cell
+    (write-letter! board @open-cell @next-letter)
+    (reset! open-cell nil)
+    (pick-random-letter!))
+
+  (let [hovered-word (selected-word @board
+                                    @current-word-cells)]
+    (when (contains? word-set hovered-word)
+      (.log js/console (str hovered-word " is a real word...")))
+  ))
 
 (defn handle-touch-release [e]
   (let [touch (first-touch e)]
     (handle-release touch)))
 
+(defn handle-start [e]
+  (reset! touch-down? true)
+  (hover-cell! e)
+  (when (occupied? @board @hovered-cell)
+    (reset! current-word-cells [@hovered-cell])))
+
+(defn handle-touch-start [e]
+  (let [touch (first-touch e)]
+    (handle-start touch)))
+
+;; should make events file
+
+(add-watch current-word-cells :current-word
+           (fn [k r o n]
+             (.log js/console
+                   (selected-word @board
+                                  n))))
+
 (defn add-event-listeners []
   (if-not (.-ejecta js/window)
     (do
       (.addEventListener canvas "mousemove" handle-move)
-      (.addEventListener canvas "mouseup" handle-release))
+      (.addEventListener canvas "mouseup" handle-release)
+      (.addEventListener canvas "mousedown" handle-start))
     (do
       (.addEventListener canvas "touchmove" handle-touch-move)
-      (.addEventListener canvas "touchend" handle-touch-release))))
+      (.addEventListener canvas "touchend" handle-touch-release)
+      (.addEventListener canvas "touchstart" handle-touch-start))
+      ))
 
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
