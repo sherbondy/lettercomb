@@ -3,6 +3,10 @@
             [lettercomb.grid :as g]
             [clojure.string :as str]))
 
+(when (.-ejecta js/window)
+  (.include js/ejecta "scrabble-words.js"))
+
+
 ;; add a device orientation listener and rotate
 ;; letters based on alpha
 
@@ -414,8 +418,9 @@
       (.addEventListener canvas "touchstart" handle-touch-start))
       ))
 
-(def game-duration-ms (* 60 5 1000))
+(def game-duration-ms (* 60 10 1000))
 
+;;; timer is currently in absolute time
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
   (when @playing?
