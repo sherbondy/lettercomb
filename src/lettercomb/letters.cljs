@@ -88,6 +88,12 @@
       (for [letter letters]
         {letter point})))))
 
+(defn word-score [word-str]
+  (reduce +
+          (for [letter word-str]
+            (let [kw (keyword (str/upper-case letter))]
+              (letter-points kw)))))
+
 (def point-colors
   {1  "#a00"
    2  "#a60"

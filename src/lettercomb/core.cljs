@@ -9,7 +9,7 @@
 ;; should be very careful to distinguish between
 ;; @board and board as arguments to functions...
 
-(def left-top [24 40])
+(def left-top [24 80])
 (def radius 24)
 
 ;; MASSACHUSETTS
@@ -23,6 +23,8 @@
 ;; maintain a vector of the currently hovered word cells
 (def current-word-cells  (atom []))
 (def touch-down?         (atom false))
+(def score               (atom 0))
+(def start-time          (atom nil)) ;; in miliseconds
 
 (def canvas (.getElementById js/document "canvas"))
 (def ctx (.getContext canvas "2d"))
@@ -63,6 +65,66 @@
 
 (defn line-to! [ctx [x y]]
   (.lineTo ctx x y))
+
+(def score-location [8 36])
+(defn draw-score! [ctx score]
+  (.save ctx)
+  (set! (.-fillStyle ctx) "#fff")
+  (.fillText ctx (str score " pts")
+             (score-location 0)
+             (score-location 1))
+  (.restore ctx))
+
+(defn pad [val padding size]
+  (let [str-val  (str val)
+        len      (count str-val)
+        pad-size (max 0 (- size len))]
+    (apply str (conj (vec (repeat pad-size padding))
+                     str-val))))
+
+(def timer-location [(- (.-width canvas) 8) 36])
+;; (defn timer-redness [ms-left game-duration-ms]
+;;   (.toString
+;;    (Math/floor (* 16 (/ ms-left game-duration-ms)))
+;;    16))
+
+(defn draw-timer! [ctx seconds-left]
+  (.save ctx)
+  ;; color can be based on time left
+  (set! (.-fillStyle ctx) "#fff")
+  (set! (.-textAlign ctx) "end")
+  (let [mins (Math/floor (/ seconds-left 60))
+        secs (mod seconds-left 60)]
+    (.fillText ctx (str (pad mins "0" 2)
+                        ":"
+                        (pad secs "0" 2))
+               (timer-location 0)
+               (timer-location 1)))
+  (.restore ctx))
+
+(def menu-size [96 32])
+(def menu-position [(- (/ (.-width canvas) 2)
+                       (/ (menu-size 0) 2))
+                    (- (.-height canvas)
+                       (menu-size 1)
+                       16)])
+(defn draw-menu! [ctx]
+  (.save ctx)
+  (set! (.-fillStyle ctx) "#000")
+  (.beginPath ctx)
+  (.rect ctx
+         (menu-position 0) (menu-position 1)
+         (menu-size 0) (menu-size 1))
+  (set! (.-lineWidth ctx) 2)
+  (set! (.-strokeStyle ctx) "#fff")
+  (.fill ctx)
+  (.stroke ctx)
+  (set! (.-fillStyle ctx) "#fff")
+  (set! (.-textAlign ctx) "middle")
+  (.fillText ctx "MENU"
+             (+ (menu-position 0) 28)
+             (+ (menu-position 1) 20))
+  (.restore ctx))
 
 ;; eventually make drawing in terms of protocols
 ;; on structures
@@ -296,10 +358,14 @@
   (doseq [cell word-cells]
     (clear-cell! a-board cell)))
 
+(defn increase-score! [added-score]
+  (swap! score + added-score))
+
 (defn handle-release [e]
   (reset! touch-down? false)
   (handle-move e)
-  (when @open-cell
+  (when (and @open-cell
+             (empty? @current-word-cells))
     (write-letter! board @open-cell @next-letter)
     (reset! open-cell nil)
     (pick-random-letter!))
@@ -309,8 +375,10 @@
     (when (contains? word-set hovered-word)
       (.log js/console (str hovered-word " is a real word..."))
       (clear-selected-word! board @current-word-cells)
-      (reset! current-word-cells []))
-  ))
+      (reset! current-word-cells [])
+      (increase-score! (l/word-score hovered-word)))
+  )
+  (reset! hovered-cell nil))
 
 (defn handle-touch-release [e]
   (let [touch (first-touch e)]
@@ -346,24 +414,36 @@
       (.addEventListener canvas "touchstart" handle-touch-start))
       ))
 
+(def game-duration-ms (* 60 5 1000))
+
 (defn game-loop []
   (js/requestAnimationFrame game-loop)
   (when @playing?
     (blacken! ctx)
-      (fill-board! ctx @board left-top radius)
-      (draw-cannon! ctx the-center radius
-                    @angle @next-letter)))
+    (fill-board! ctx @board left-top radius)
+    (draw-cannon! ctx the-center radius
+                  @angle @next-letter)
+    (draw-score! ctx @score)
+    (let [time-left-ms (+ game-duration-ms
+                          (- @start-time
+                             (.getTime (js/Date.))))
+          seconds-left (Math/floor (/ time-left-ms 1000))]
+      (draw-timer! ctx seconds-left))
+    (draw-menu! ctx)))
 
-(add-event-listeners)
-(game-loop)
+(defn init! []
+  (reset! start-time (.getTime (js/Date.)))
+  (write-word! board [0 0] "hello")
+  (write-word! board [1 1] "there")
 
-(write-word! board [0 0] "hello")
-(write-word! board [1 1] "there")
+  (add-event-listeners)
+  (game-loop))
 
 ;; (swap! board assoc-in [0 0] :a)
 ;; (swap! board assoc-in [11 6] :z)
 
 ;; (g/pixel-to-axial [100 100] left-top radius)
 
+(init!)
 (pause!)
 (play!)
