@@ -6,7 +6,7 @@
 #import "EJConvertWebGL.h"
 #import "EJJavaScriptView.h"
 
-#import <JavaScriptCore/JSTypedArray.h>
+#import "JSTypedArray.h"
 
 
 @implementation EJBindingCanvasContextWebGL

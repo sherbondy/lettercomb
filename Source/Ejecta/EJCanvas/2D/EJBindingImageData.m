@@ -1,6 +1,6 @@
 #import "EJBindingImageData.h"
 #import "EJJavaScriptView.h"
-#import <JavaScriptCore/JSTypedArray.h>
+#import "JSTypedArray.h"
 
 @implementation EJBindingImageData
 @synthesize imageData;

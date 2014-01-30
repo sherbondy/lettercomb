@@ -1,5 +1,5 @@
 #import "EJBindingHttpRequest.h"
-#import <JavaScriptCore/JSTypedArray.h>
+#import "JSTypedArray.h"
 #import "EJJavaScriptView.h"
 
 @implementation EJBindingHttpRequest

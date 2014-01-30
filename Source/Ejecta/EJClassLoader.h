@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <JavaScriptCore/JavaScriptCore.h>
+#import "JavaScriptCore.h"
 
 @class EJJavaScriptView;
 @interface EJClassLoader : NSObject {

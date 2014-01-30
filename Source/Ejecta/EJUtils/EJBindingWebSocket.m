@@ -1,5 +1,5 @@
 #import "EJBindingWebSocket.h"
-#import <JavaScriptCore/JSTypedArray.h>
+#import "JSTypedArray.h"
 
 @implementation EJBindingWebSocket
 

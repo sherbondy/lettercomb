@@ -1,6 +1,6 @@
 #import "EJConvertWebGL.h"
 #import "EJConvert.h"
-#import <JavaScriptCore/JSTypedArray.h>
+#import "JSTypedArray.h"
 
 // FIXME: use C++ with a template?
 #define CREATE_JS_VALUE_TO_ARRAY_FUNC(NAME, TYPE, ARRAY_TYPE) \
