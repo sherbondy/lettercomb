@@ -845,6 +845,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Source/lib\"",
+					"\"$(SRCROOT)/Source/lib/JavaScriptCore\"",
 				);
 				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = LetterComb;
@@ -871,6 +872,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Source/lib\"",
+					"\"$(SRCROOT)/Source/lib/JavaScriptCore\"",
 				);
 				PRODUCT_NAME = LetterComb;
 				PROVISIONING_PROFILE = "";
