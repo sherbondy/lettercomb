@@ -31,11 +31,11 @@
 
 #if defined(__OBJC__) && JSC_OBJC_API_ENABLED
 
-#import "JSContext.h"
-#import "JSValue.h"
-#import "JSManagedValue.h"
-#import "JSVirtualMachine.h"
-#import "JSExport.h"
+//#import "JSContext.h"
+//#import "JSValue.h"
+//#import "JSManagedValue.h"
+//#import "JSVirtualMachine.h"
+//#import "JSExport.h"
 
 #endif
 
