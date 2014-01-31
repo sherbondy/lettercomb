@@ -26,6 +26,7 @@
 (def next-letter         (atom :A))
 ;; maintain a vector of the currently hovered word cells
 (def current-word-cells  (atom []))
+;; should probably maintain a set of word cells
 (def touch-down?         (atom false))
 (def score               (atom 0))
 (def start-time          (atom nil)) ;; in miliseconds
@@ -182,7 +183,7 @@
         (draw-hexagon! ctx center radius
                        (if (= @open-cell [col row])
                          "#fff" "#000"))
-        (let [color (if (= @hovered-cell [col row])
+        (let [color (if (contains? (set @current-word-cells) [col row])
                       (l/darken (letter-color letter))
                       (letter-color letter))]
           (draw-letter-hex! ctx center radius
@@ -194,17 +195,17 @@
     (center-at [mid-col mid-row] left-top radius)))
 
 (defn draw-cannon! [ctx center radius angle next-letter]
-    (.save ctx)
-    (.translate ctx (center 0) (center 1))
-    (.rotate ctx angle)
-    (.translate ctx (* -1 (center 0)) (* -1 (center 1)))
-    (draw-hexagon! ctx center radius "#fff")
-    (draw-hexagon! ctx
-                   [(center 0) (- (center 1) radius)]
-                   radius "#fff")
-    (.restore ctx)
-    (set! (.-fillStyle ctx) "#000")
-    (draw-letter! ctx center (name next-letter)))
+  (.save ctx)
+  (.translate ctx (center 0) (center 1))
+  (.rotate ctx angle)
+  (.translate ctx (* -1 (center 0)) (* -1 (center 1)))
+  (draw-hexagon! ctx center radius "#fff")
+  (draw-hexagon! ctx
+                 [(center 0) (- (center 1) radius)]
+                 radius "#fff")
+  (.restore ctx)
+  (set! (.-fillStyle ctx) "#000")
+  (draw-letter! ctx center (name next-letter)))
 
 (def playing? (atom true))
 
