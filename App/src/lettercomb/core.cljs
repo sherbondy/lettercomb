@@ -419,7 +419,8 @@
       (.addEventListener canvas "touchstart" handle-touch-start))
       ))
 
-(def game-duration-ms (* 60 10 1000))
+;; 5 minutes, dog
+(def game-duration-ms (* 5 60 1000))
 
 ;;; timer is currently in absolute time
 (defn game-loop []
