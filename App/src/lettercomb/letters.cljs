@@ -3,9 +3,12 @@
 
 ;; HELPER FUNCTIONS
 
+;; should eventually store the dictionary in a clever
+;; data structure like a ternary search tree.
+
 ;; should make a binary "closest" search...
 
-(defn binary-search
+(defn binary-search*
   "Finds earliest occurrence of x in xs (a vector) using binary search.
   If x is between two values, return the larger index."
   [xs x]
@@ -24,12 +27,13 @@
           (recur (inc mid) high)
           (recur low mid))))))
 
-;; (binary-search [1 2 3 4 5 6 7 8] 1)
+;; (binary-search* [1 2 3 4 5 6 7 8] 1)
 
 ;; based on
 ;; http://en.wikipedia.org/wiki/Letter_frequency#Relative_frequencies_of_letters_in_the_English_language
 (def letter-freqs
-  {:A 8.167
+  (sorted-map
+   :A 8.167
    :B 1.492
    :C	2.782
    :D	4.253
@@ -54,22 +58,44 @@
    :W	2.360
    :X	0.150
    :Y	1.974
-   :Z	0.075})
+   :Z	0.075))
+
+(def item-freqs
+  (sorted-map
+   :bomb 100))
+
+(def tile-freqs
+  (sorted-map
+   :letter 50
+   :item 50))
 
 (defn letter-at-index [i]
   (keyword (String/fromCharCode
             (+ 65 i))))
 
-(defn make-cumulative-freqs [letter-freqs i result-vec]
-  (if (< i 26)
-    (let [next-freq (letter-freqs (letter-at-index i))
-          total     (+ (last result-vec) next-freq)]
-      (make-cumulative-freqs letter-freqs
-                             (inc i)
-                             (conj result-vec total)))
-    result-vec))
+;; should really normalize this so that things don't have to be 1-100
+(defn make-cumulative-freqs [freq-map i result-vec]
+  "make a vector of cumulative frequencies for freq-map"
+    (if (< i (count freq-map))
+      (let [next-freq (nth (vals freq-map) i)
+            total (+ (last result-vec) next-freq)]
+        (make-cumulative-freqs freq-map
+                               (inc i)
+                               (conj result-vec total)))
+      result-vec))
 
-(def cumulative-freqs
+;;     (if (< i (count letter-freqs))
+;;       (let [next-freq (letter-freqs (letter-at-index i))
+;;             total     (+ (last result-vec) next-freq)]
+;;         (make-cumulative-freqs letter-freqs
+;;                                (inc i)
+;;                                (conj result-vec total)))
+;;       result-vec)))
+
+(def cumulative-tile-freqs
+  (make-cumulative-freqs tile-freqs 0 []))
+
+(def cumulative-letter-freqs
   (make-cumulative-freqs letter-freqs 0 []))
 
 (def point-letters
@@ -110,12 +136,24 @@
    (str/replace "6" "3")
    (str/replace "a" "7")))
 
+(defn rand-100 []
+  "return random number 0 to 100"
+  (Math/floor
+    (* (Math/random) 100)))
+
 ;; this should really be at the frequency of
 ;; letter appearances in english words
 (defn rand-letter []
   "ascii lower case starts at 97"
   (letter-at-index
-    (binary-search
-      cumulative-freqs
-      (Math/floor
-        (* (Math/random) 100)))))
+    (binary-search*
+      cumulative-letter-freqs
+     (rand-100))))
+
+(defn rand-tile []
+  (let [n (rand-100)
+        tile-i (binary-search* cumulative-tile-freqs n)
+        tile-type (nth (keys tile-freqs) tile-i)]
+    tile-type))
+
+;; (rand-tile)

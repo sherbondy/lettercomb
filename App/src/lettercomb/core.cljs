@@ -16,7 +16,6 @@
 (def left-top [24 80])
 (def radius 24)
 
-;; MASSACHUSETTS
 (def board               (atom (g/make-rect-board 7 12)))
 (def angle               (atom Math/PI))
 ;; the currently hovered cell
